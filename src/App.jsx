@@ -7,6 +7,11 @@ const App = () => {
 	const [blogs, setBlogs] = useState([]);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [newBlog, setNewBlog] = useState({
+		title: "",
+		author: "",
+		url: "",
+	});
 	const [user, setUser] = useState(null);
 
 	useEffect(() => {
@@ -48,6 +53,13 @@ const App = () => {
 		}
 	};
 
+	const handleCreateBlog = async (event) => {
+		event.preventDefault();
+		const createdBlog = await blogService.createBlog(newBlog);
+		setNewBlog({ title: "", author: "", url: "" });
+		setBlogs((oldBlogs) => [...oldBlogs, createdBlog]);
+	};
+
 	return (
 		<>
 			{user === null ? (
@@ -87,7 +99,7 @@ const App = () => {
 				</div>
 			) : (
 				<div>
-					<div className="flex gap-2 items-end mb-7">
+					<div className="flex gap-2 items-end mb-20">
 						<h1 className="text-5xl font-medium">
 							Logged in as {user.username}
 						</h1>
@@ -99,11 +111,84 @@ const App = () => {
 						</button>
 					</div>
 
-					<h2 className="text-5xl font-medium mb-5">Blogs</h2>
-					<div className="flex flex-col gap-3 text-4xl">
+					<h2 className="text-4xl font-medium mb-5">Blogs</h2>
+					<div className="flex flex-col gap-3 text-4xl mb-16">
 						{blogs.map((blog) => (
 							<Blog key={blog.id} blog={blog} />
 						))}
+					</div>
+
+					<div>
+						<h2 className="text-4xl font-medium mb-5">
+							Create new
+						</h2>
+
+						<form onSubmit={handleCreateBlog}>
+							<div>
+								<label
+									className="text-3xl mr-3"
+									htmlFor="title"
+								>
+									title:
+								</label>
+								<input
+									className="border-2 border-gray-300 rounded-md mb-3"
+									type="text"
+									id="title"
+									value={newBlog.title}
+									onChange={({ target }) =>
+										setNewBlog({
+											...newBlog,
+											title: target.value,
+										})
+									}
+								/>
+							</div>
+
+							<div>
+								<label
+									className="text-3xl mr-2"
+									htmlFor="author"
+								>
+									author:
+								</label>
+								<input
+									className="border-2 border-gray-300 rounded-md mb-3"
+									type="text"
+									id="author"
+									value={newBlog.author}
+									onChange={({ target }) =>
+										setNewBlog({
+											...newBlog,
+											author: target.value,
+										})
+									}
+								/>
+							</div>
+							<div>
+								<label className="text-3xl mr-3" htmlFor="url">
+									url:
+								</label>
+								<input
+									className="border-2 border-gray-300 rounded-md mb-3"
+									type="text"
+									id="author"
+									value={newBlog.url}
+									onChange={({ target }) =>
+										setNewBlog({
+											...newBlog,
+											url: target.value,
+										})
+									}
+								/>
+							</div>
+							<button
+								type="submit"
+								className=" text-2xl font-bold px-2 py-1 bg-gray-900 text-white rounded-md"
+							>
+								create
+							</button>
+						</form>
 					</div>
 				</div>
 			)}
