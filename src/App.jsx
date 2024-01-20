@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import login from "./services/login";
+import Notification from "./components/Notification";
+import Login from "./components/Login";
+import CreateBlog from "./components/CreateBlog";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
@@ -13,6 +16,7 @@ const App = () => {
 		url: "",
 	});
 	const [user, setUser] = useState(null);
+	const [notification, setNotification] = useState(null);
 
 	useEffect(() => {
 		blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -33,6 +37,7 @@ const App = () => {
 		setUser(null);
 		blogService.setToken(null);
 		window.localStorage.clear();
+		displayNotification({ message: "signed out", status: "success" });
 	};
 
 	const handleSubmit = async (event) => {
@@ -48,55 +53,57 @@ const App = () => {
 			blogService.setToken(user.token);
 			setUsername("");
 			setPassword("");
+
+			displayNotification({
+				message: "login success",
+				status: "success",
+			});
 		} catch (exception) {
+			displayNotification({
+				message: "Wrong username or password",
+				status: "error",
+			});
+
 			console.log("something went wrong");
 		}
 	};
 
 	const handleCreateBlog = async (event) => {
 		event.preventDefault();
+
+		// No error handler
 		const createdBlog = await blogService.createBlog(newBlog);
 		setNewBlog({ title: "", author: "", url: "" });
 		setBlogs((oldBlogs) => [...oldBlogs, createdBlog]);
+
+		displayNotification({
+			message: `a new blog ${newBlog.title} by ${newBlog.author} was created`,
+			status: "success",
+		});
+	};
+
+	const displayNotification = (notification) => {
+		console.log("notify");
+		setNotification(notification);
+
+		setTimeout(() => {
+			setNotification(null);
+		}, 3000);
 	};
 
 	return (
-		<>
+		<div className="px-12 py-4">
+			{notification !== null && (
+				<Notification notification={notification} />
+			)}
 			{user === null ? (
-				<div>
-					<h1 className="text-4xl mt-3 mb-4">Login to application</h1>
-					<form onSubmit={handleSubmit}>
-						<div className="flex gap-2 mb-2 ">
-							<label htmlFor="username">Username</label>
-							<input
-								className="border-2 rounded-md border-black p-2"
-								type="text"
-								id="username"
-								value={username}
-								onChange={({ target }) =>
-									setUsername(target.value)
-								}
-							/>
-						</div>
-
-						<div className="flex gap-2 mb-5">
-							<label htmlFor="password">Password</label>
-							<input
-								className="border-2 rounded-md border-black p-2"
-								type="password"
-								id="password"
-								value={password}
-								onChange={({ target }) =>
-									setPassword(target.value)
-								}
-							/>
-						</div>
-
-						<button className="bg-slate-900 text-white font-semibold py-1 px-3 rounded-lg">
-							Login
-						</button>
-					</form>
-				</div>
+				<Login
+					handleSubmit={handleSubmit}
+					username={username}
+					password={password}
+					setUsername={setUsername}
+					setPassword={setPassword}
+				/>
 			) : (
 				<div>
 					<div className="flex gap-2 items-end mb-20">
@@ -118,81 +125,14 @@ const App = () => {
 						))}
 					</div>
 
-					<div>
-						<h2 className="text-4xl font-medium mb-5">
-							Create new
-						</h2>
-
-						<form onSubmit={handleCreateBlog}>
-							<div>
-								<label
-									className="text-3xl mr-3"
-									htmlFor="title"
-								>
-									title:
-								</label>
-								<input
-									className="border-2 border-gray-300 rounded-md mb-3"
-									type="text"
-									id="title"
-									value={newBlog.title}
-									onChange={({ target }) =>
-										setNewBlog({
-											...newBlog,
-											title: target.value,
-										})
-									}
-								/>
-							</div>
-
-							<div>
-								<label
-									className="text-3xl mr-2"
-									htmlFor="author"
-								>
-									author:
-								</label>
-								<input
-									className="border-2 border-gray-300 rounded-md mb-3"
-									type="text"
-									id="author"
-									value={newBlog.author}
-									onChange={({ target }) =>
-										setNewBlog({
-											...newBlog,
-											author: target.value,
-										})
-									}
-								/>
-							</div>
-							<div>
-								<label className="text-3xl mr-3" htmlFor="url">
-									url:
-								</label>
-								<input
-									className="border-2 border-gray-300 rounded-md mb-3"
-									type="text"
-									id="author"
-									value={newBlog.url}
-									onChange={({ target }) =>
-										setNewBlog({
-											...newBlog,
-											url: target.value,
-										})
-									}
-								/>
-							</div>
-							<button
-								type="submit"
-								className=" text-2xl font-bold px-2 py-1 bg-gray-900 text-white rounded-md"
-							>
-								create
-							</button>
-						</form>
-					</div>
+					<CreateBlog
+						handleCreateBlog={handleCreateBlog}
+						newBlog={newBlog}
+						setNewBlog={setNewBlog}
+					/>
 				</div>
 			)}
-		</>
+		</div>
 	);
 };
 
