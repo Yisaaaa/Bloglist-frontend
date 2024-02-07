@@ -1,8 +1,22 @@
 import React from "react";
+import { useState } from "react";
 
-const CreateBlog = ({ handleCreateBlog, newBlog, setNewBlog }) => {
+const CreateBlog = ({ handleCreateBlog }) => {
+	const [newBlog, setNewBlog] = useState({
+		title: "",
+		author: "",
+		url: "",
+	});
+
+	const createBlog = (event) => {
+		event.preventDefault();
+
+		handleCreateBlog(newBlog);
+		setNewBlog({ title: "", author: "", url: "" });
+	};
+
 	return (
-		<form onSubmit={handleCreateBlog}>
+		<form onSubmit={createBlog}>
 			<h2 className="text-4xl font-medium mb-5">Create new</h2>
 			<div>
 				<label className="text-3xl mr-3" htmlFor="title">

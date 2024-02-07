@@ -1,22 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import login from "./services/login";
 import Notification from "./components/Notification";
 import Login from "./components/Login";
 import CreateBlog from "./components/CreateBlog";
+import Togglable from "./components/Togglable";
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-	const [newBlog, setNewBlog] = useState({
-		title: "",
-		author: "",
-		url: "",
-	});
+
 	const [user, setUser] = useState(null);
 	const [notification, setNotification] = useState(null);
+
+	const createBlogRef = useRef();
 
 	useEffect(() => {
 		blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -46,10 +45,7 @@ const App = () => {
 		try {
 			const user = await login({ username, password });
 			setUser(user);
-			window.localStorage.setItem(
-				"loggedInBlogUser",
-				JSON.stringify(user)
-			);
+			window.localStorage.setItem("loggedInBlogUser", JSON.stringify(user));
 			blogService.setToken(user.token);
 			setUsername("");
 			setPassword("");
@@ -68,12 +64,13 @@ const App = () => {
 		}
 	};
 
-	const handleCreateBlog = async (event) => {
-		event.preventDefault();
+	const handleCreateBlog = async (newBlog) => {
+		// Close the blog form here
+		// Some code...
+		createBlogRef.current.toggleVisibility();
 
 		// No error handler
 		const createdBlog = await blogService.createBlog(newBlog);
-		setNewBlog({ title: "", author: "", url: "" });
 		setBlogs((oldBlogs) => [...oldBlogs, createdBlog]);
 
 		displayNotification({
@@ -93,9 +90,7 @@ const App = () => {
 
 	return (
 		<div className="px-12 py-4">
-			{notification !== null && (
-				<Notification notification={notification} />
-			)}
+			{notification !== null && <Notification notification={notification} />}
 			{user === null ? (
 				<Login
 					handleSubmit={handleSubmit}
@@ -125,11 +120,15 @@ const App = () => {
 						))}
 					</div>
 
-					<CreateBlog
+					{/* <CreateBlog
 						handleCreateBlog={handleCreateBlog}
 						newBlog={newBlog}
 						setNewBlog={setNewBlog}
-					/>
+					/> */}
+
+					<Togglable buttonLabel="new blog" ref={createBlogRef}>
+						<CreateBlog handleCreateBlog={handleCreateBlog} />
+					</Togglable>
 				</div>
 			)}
 		</div>
