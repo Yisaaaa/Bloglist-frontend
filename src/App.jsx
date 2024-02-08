@@ -79,6 +79,21 @@ const App = () => {
 		});
 	};
 
+	const handleLikeBlog = async (blog) => {
+		const updatedBlog = await blogService.likeBlog(blog);
+
+		setBlogs((oldBlogs) => {
+			return oldBlogs.map((oldBlog) =>
+				oldBlog.id === blog.id ? updatedBlog : oldBlog
+			);
+		});
+
+		displayNotification({
+			message: `blog ${blog.title} was liked`,
+			status: "success",
+		});
+	};
+
 	const displayNotification = (notification) => {
 		console.log("notify");
 		setNotification(notification);
@@ -116,7 +131,7 @@ const App = () => {
 					<h2 className="text-4xl font-medium mb-5">Blogs</h2>
 					<div className="flex flex-col gap-3 text-4xl mb-16">
 						{blogs.map((blog) => (
-							<Blog key={blog.id} blog={blog} />
+							<Blog key={blog.id} handleLikeBlog={handleLikeBlog} blog={blog} />
 						))}
 					</div>
 

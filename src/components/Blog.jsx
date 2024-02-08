@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "./Button";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLikeBlog }) => {
 	const [visible, setVisible] = useState(false);
 
 	const blogStyle = {
@@ -33,10 +33,7 @@ const Blog = ({ blog }) => {
 					<div>{blog.url}</div>
 					<div className="flex align-middle gap-4">
 						<div>Likes {blog.likes}</div>
-						<Button
-							label={"like"}
-							handleClick={() => console.log("clicked like")}
-						/>
+						<Button label={"like"} handleClick={() => handleLikeBlog(blog)} />
 					</div>
 					<div>{blog.user.username}</div>
 				</>
