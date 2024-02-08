@@ -15,6 +15,10 @@ const App = () => {
 	const [user, setUser] = useState(null);
 	const [notification, setNotification] = useState(null);
 
+	const sortedBlogs = blogs.sort((a, b) => {
+		return b.likes - a.likes;
+	});
+
 	const createBlogRef = useRef();
 
 	useEffect(() => {
@@ -130,7 +134,7 @@ const App = () => {
 
 					<h2 className="text-4xl font-medium mb-5">Blogs</h2>
 					<div className="flex flex-col gap-3 text-4xl mb-16">
-						{blogs.map((blog) => (
+						{sortedBlogs.map((blog) => (
 							<Blog key={blog.id} handleLikeBlog={handleLikeBlog} blog={blog} />
 						))}
 					</div>
