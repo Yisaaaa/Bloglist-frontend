@@ -13,7 +13,6 @@ const getAll = async () => {
 };
 
 const createBlog = async (blog) => {
-	console.log(token);
 	const request = await axios.post(baseUrl, blog, {
 		headers: { Authorization: token },
 	});
@@ -30,4 +29,14 @@ const likeBlog = async (blog) => {
 	return request.data;
 };
 
-export default { getAll, setToken, createBlog, likeBlog };
+const deleteBlog = async (blog) => {
+	console.log("deleting blog", blog);
+
+	await axios.delete(`${baseUrl}/${blog.id}`, {
+		headers: {
+			Authorization: token,
+		},
+	});
+};
+
+export default { getAll, setToken, createBlog, likeBlog, deleteBlog };

@@ -98,6 +98,25 @@ const App = () => {
 		});
 	};
 
+	const handleDeleteBlog = async (blog) => {
+		await blogService.deleteBlog(blog);
+
+		setBlogs((oldBlogs) => {
+			let newBlogs = [];
+			oldBlogs.forEach((oldBlog) => {
+				if (oldBlog.id !== blog.id) {
+					newBlogs.push(oldBlog);
+				}
+			});
+			return newBlogs;
+		});
+
+		displayNotification({
+			message: `blog ${blog.title} was deleted`,
+			status: "success",
+		});
+	};
+
 	const displayNotification = (notification) => {
 		console.log("notify");
 		setNotification(notification);
@@ -135,7 +154,13 @@ const App = () => {
 					<h2 className="text-4xl font-medium mb-5">Blogs</h2>
 					<div className="flex flex-col gap-3 text-4xl mb-16">
 						{sortedBlogs.map((blog) => (
-							<Blog key={blog.id} handleLikeBlog={handleLikeBlog} blog={blog} />
+							<Blog
+								key={blog.id}
+								handleLikeBlog={handleLikeBlog}
+								handleDeleteBlog={handleDeleteBlog}
+								blog={blog}
+								user={user}
+							/>
 						))}
 					</div>
 

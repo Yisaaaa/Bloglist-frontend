@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "./Button";
 
-const Blog = ({ blog, handleLikeBlog }) => {
+const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
 	const [visible, setVisible] = useState(false);
 
 	const blogStyle = {
@@ -14,6 +14,16 @@ const Blog = ({ blog, handleLikeBlog }) => {
 
 	const toggleVisibility = () => {
 		setVisible((prevVisible) => setVisible(!prevVisible));
+	};
+
+	const deleteBlog = () => {
+		const confirm = window.confirm(
+			`Are you sure you want to delete ${blog.title}?`
+		);
+
+		if (confirm) {
+			handleDeleteBlog(blog);
+		}
 	};
 
 	return (
@@ -36,6 +46,9 @@ const Blog = ({ blog, handleLikeBlog }) => {
 						<Button label={"like"} handleClick={() => handleLikeBlog(blog)} />
 					</div>
 					<div>{blog.user.username}</div>
+					{user.id === blog.user.id && (
+						<Button label={"remove"} handleClick={() => deleteBlog()} />
+					)}
 				</>
 			)}
 		</div>
