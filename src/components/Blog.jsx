@@ -13,7 +13,6 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
 	};
 
 	const toggleVisibility = () => {
-		console.log("toggled");
 		setVisible((prevVisible) => !prevVisible);
 	};
 
@@ -27,7 +26,6 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
 		}
 	};
 
-	console.log(visible);
 	return (
 		<div style={blogStyle}>
 			<div className="flex gap-4 align-middle">
