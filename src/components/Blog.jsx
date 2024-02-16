@@ -13,7 +13,8 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
 	};
 
 	const toggleVisibility = () => {
-		setVisible((prevVisible) => setVisible(!prevVisible));
+		console.log("toggled");
+		setVisible((prevVisible) => !prevVisible);
 	};
 
 	const deleteBlog = () => {
@@ -26,6 +27,7 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
 		}
 	};
 
+	console.log(visible);
 	return (
 		<div style={blogStyle}>
 			<div className="flex gap-4 align-middle">
@@ -34,7 +36,7 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
 				</div>
 				<Button
 					label={!visible ? "view" : "hide"}
-					handleClick={toggleVisibility}
+					handleClick={() => toggleVisibility()}
 				/>
 			</div>
 
