@@ -60,7 +60,7 @@ const CreateBlog = ({ handleCreateBlog }) => {
 				<input
 					className="border-2 border-gray-300 rounded-md mb-3"
 					type="text"
-					id="author"
+					id="url"
 					value={newBlog.url}
 					onChange={({ target }) =>
 						setNewBlog({
