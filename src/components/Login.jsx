@@ -32,7 +32,10 @@ const Login = ({
 				/>
 			</div>
 
-			<button className="bg-slate-900 text-white font-semibold py-1 px-3 rounded-lg">
+			<button
+				id="login"
+				className="bg-slate-900 text-white font-semibold py-1 px-3 rounded-lg"
+			>
 				Login
 			</button>
 		</form>
