@@ -89,6 +89,13 @@ describe("Bloglist", function () {
 	describe("When logged in", function () {
 		beforeEach(function () {
 			cy.NoUILogin(user.username, user.password);
+			const blog = {
+				title: "Dune",
+				author: "Frank Herbert",
+				url: "http://google.com",
+			};
+
+			cy.NoUICreateBlog(blog);
 		});
 
 		it("user can create a new blog", function () {
@@ -101,6 +108,15 @@ describe("Bloglist", function () {
 			cy.NoUICreateBlog(blog);
 
 			cy.contains(`${blog.title} by ${blog.author}`);
+		});
+
+		it("users can like a blog", function () {
+			cy.contains("Dune").parent().find("button").click();
+			cy.contains("Dune").parent().parent().contains("like").click();
+
+			// Checking if the like was successful
+			cy.contains("Dune").parent().parent().contains("Likes 1");
+			cy.contains("blog Dune was liked");
 		});
 	});
 });
