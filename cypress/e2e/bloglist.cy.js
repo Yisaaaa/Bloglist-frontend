@@ -4,6 +4,36 @@ Cypress.Commands.add("UILogin", function (username, password) {
 	cy.get("#login").click();
 });
 
+Cypress.Commands.add("NoUILogin", function (username, password) {
+	// This login bypasses the ui and logs in by
+	// sending a request to the backend
+
+	cy.request({
+		method: "POST",
+		url: `${Cypress.env("BACKEND")}/login`,
+		body: { username, password },
+	}).then((response) => {
+		// This should have been taken care of in the
+		// frontend if were not bypassing the UI
+		const user = JSON.stringify(response.body);
+		localStorage.setItem("loggedInBlogUser", user);
+		cy.visit("");
+	});
+});
+
+Cypress.Commands.add("NoUICreateBlog", function (blog) {
+	const token = JSON.parse(localStorage.getItem("loggedInBlogUser")).token;
+
+	cy.request({
+		method: "POST",
+		url: `${Cypress.env("BACKEND")}/blogs`,
+		body: blog,
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	}).then((res) => cy.visit(""));
+});
+
 describe("Bloglist", function () {
 	let user;
 
@@ -48,6 +78,25 @@ describe("Bloglist", function () {
 				"have.class",
 				"bg-red-300"
 			);
+		});
+
+		it("is also possible by bypassing the UI", function () {
+			// cy.request("POST", `${Cypress.env("BACKEND")}/testing/reset`);
+			cy.NoUILogin(user.username, user.password);
+		});
+	});
+
+	describe("When logged in", function () {
+		beforeEach(function () {
+			cy.NoUILogin(user.username, user.password);
+		});
+
+		it("user can create a new blog", function () {
+			const blog = {
+				title: "Sherlock Holmes",
+				author: "Arthur Conan Doyle",
+				url: "http://google.com",
+			};
 		});
 	});
 });
