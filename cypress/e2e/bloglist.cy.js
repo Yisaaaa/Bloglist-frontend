@@ -97,6 +97,10 @@ describe("Bloglist", function () {
 				author: "Arthur Conan Doyle",
 				url: "http://google.com",
 			};
+
+			cy.NoUICreateBlog(blog);
+
+			cy.contains(`${blog.title} by ${blog.author}`);
 		});
 	});
 });
