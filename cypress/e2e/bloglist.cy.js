@@ -89,6 +89,7 @@ describe("Bloglist", function () {
 	describe("When logged in", function () {
 		beforeEach(function () {
 			cy.NoUILogin(user.username, user.password);
+
 			const blog = {
 				title: "Dune",
 				author: "Frank Herbert",
@@ -110,13 +111,22 @@ describe("Bloglist", function () {
 			cy.contains(`${blog.title} by ${blog.author}`);
 		});
 
-		it("users can like a blog", function () {
+		it("user can like a blog", function () {
 			cy.contains("Dune").parent().find("button").click();
 			cy.contains("Dune").parent().parent().contains("like").click();
 
 			// Checking if the like was successful
 			cy.contains("Dune").parent().parent().contains("Likes 1");
 			cy.contains("blog Dune was liked");
+		});
+
+		it("user can delete blog create by the user", function () {
+			cy.contains("Dune").parent().find("button").click();
+
+			// User should see a remove button
+			cy.contains("remove").click();
+
+			cy.contains("Dune").should("not.exist");
 		});
 	});
 });
