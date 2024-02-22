@@ -152,14 +152,47 @@ describe("Bloglist", function () {
 			cy.contains("Dune").should("not.exist");
 		});
 
-		it.only("blogs created by the user can't be deleted by another user", function () {
+		it("blogs created by the user can't be deleted by another user", function () {
 			cy.contains("A Song of Ice and Fire").parent().find("button").click();
 
 			cy.contains("A Song")
 				.parent()
 				.parent()
-				.find("remove")
+				.contains("remove")
 				.should("not.exist");
+		});
+
+		it.only("blogs are sorted by the number of likes", function () {
+			// Liking the Dune blog
+			cy.contains("Dune").parent().find("button").click();
+
+			cy.contains("Dune").parent().parent().find("#likeBtn").click();
+
+			// Checking that Dune was at the top
+			cy.get(".blog").eq(0).should("contain", "Dune");
+
+			// Liking the Song of Ice and Fire blog
+			cy.contains("A Song of Ice").parent().find("button").click();
+
+			cy.get(".blog")
+				.contains("A Song of Ice")
+				.parent()
+				.parent()
+				.find("#likeBtn")
+				.click();
+
+			cy.wait(2000);
+
+			cy.get(".blog")
+				.contains("A Song of Ice")
+				.parent()
+				.parent()
+				.find("#likeBtn")
+				.click();
+
+			// Checking that the Song of Ice and Fire is
+			// at the top
+			cy.get(".blog").eq(0).should("contain", "A Song of Ice");
 		});
 	});
 });
