@@ -27,7 +27,7 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
 	};
 
 	return (
-		<div style={blogStyle}>
+		<div className="blog" style={blogStyle}>
 			<div className="flex gap-4 align-middle">
 				<div>
 					{blog.title} by <em>{blog.author}</em>
@@ -43,7 +43,11 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
 					<div>{blog.url}</div>
 					<div className="flex align-middle gap-4">
 						<div>Likes {blog.likes}</div>
-						<Button label={"like"} handleClick={() => handleLikeBlog(blog)} />
+						<Button
+							id="likeBtn"
+							label={"like"}
+							handleClick={() => handleLikeBlog(blog)}
+						/>
 					</div>
 					<div>{blog.user.username}</div>
 					{user.id === blog.user.id && (
