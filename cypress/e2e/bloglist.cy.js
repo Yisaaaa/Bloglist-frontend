@@ -88,6 +88,29 @@ describe("Bloglist", function () {
 
 	describe("When logged in", function () {
 		beforeEach(function () {
+			const anotherUser = {
+				username: "another user",
+				name: "another user",
+				password: "anotherPassword",
+			};
+
+			const anotherBlog = {
+				title: "A Song of Ice and Fire",
+				author: "George Martin",
+				url: "randomUrl",
+			};
+
+			// Creating the anotherUser user
+			cy.request("POST", `${Cypress.env("BACKEND")}/users`, anotherUser);
+
+			// logging in the anotherUser and create a blog
+			cy.NoUILogin(anotherUser.username, anotherUser.password);
+
+			cy.NoUICreateBlog(anotherBlog);
+
+			// Signing out anotherUser
+			localStorage.clear();
+
 			cy.NoUILogin(user.username, user.password);
 
 			const blog = {
@@ -127,6 +150,16 @@ describe("Bloglist", function () {
 			cy.contains("remove").click();
 
 			cy.contains("Dune").should("not.exist");
+		});
+
+		it.only("blogs created by the user can't be deleted by another user", function () {
+			cy.contains("A Song of Ice and Fire").parent().find("button").click();
+
+			cy.contains("A Song")
+				.parent()
+				.parent()
+				.find("remove")
+				.should("not.exist");
 		});
 	});
 });
