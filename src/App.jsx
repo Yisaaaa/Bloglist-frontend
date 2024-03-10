@@ -6,14 +6,17 @@ import Notification from "./components/Notification";
 import Login from "./components/Login";
 import CreateBlog from "./components/CreateBlog";
 import Togglable from "./components/Togglable";
+import { setNotification } from "./reducers/notificationReducer";
+import { useDispatch } from "react-redux";
 
 const App = () => {
+	const dispatch = useDispatch();
+
 	const [blogs, setBlogs] = useState([]);
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
 	const [user, setUser] = useState(null);
-	const [notification, setNotification] = useState(null);
 
 	const sortedBlogs = blogs.sort((a, b) => {
 		return b.likes - a.likes;
@@ -40,7 +43,11 @@ const App = () => {
 		setUser(null);
 		blogService.setToken(null);
 		window.localStorage.clear();
-		displayNotification({ message: "signed out", status: "success" });
+
+		dispatch(
+			setNotification({ notification: "signed out", status: "success" }, 3)
+		);
+		// displayNotification({ message: "signed out", status: "success" });
 	};
 
 	const handleSubmit = async (event) => {
@@ -54,17 +61,35 @@ const App = () => {
 			setUsername("");
 			setPassword("");
 
-			displayNotification({
-				message: "login success",
-				status: "success",
-			});
-		} catch (exception) {
-			displayNotification({
-				message: "Wrong username or password",
-				status: "error",
-			});
+			// displayNotification({
+			// 	message: "login success",
+			// 	status: "success",
+			// });
 
-			console.log("something went wrong");
+			dispatch(
+				setNotification(
+					{
+						notification: "Logged in successfully",
+						status: "success",
+					},
+					3
+				)
+			);
+		} catch (exception) {
+			// displayNotification({
+			// 	message: "Wrong username or password",
+			// 	status: "error",
+			// });
+
+			dispatch(
+				setNotification(
+					{
+						notification: "Wrong username or password",
+						status: "error",
+					},
+					3
+				)
+			);
 		}
 	};
 
@@ -74,13 +99,34 @@ const App = () => {
 		createBlogRef.current.toggleVisibility();
 
 		// No error handler
-		const createdBlog = await blogService.createBlog(newBlog);
-		setBlogs((oldBlogs) => [...oldBlogs, createdBlog]);
 
-		displayNotification({
-			message: `a new blog ${newBlog.title} by ${newBlog.author} was created`,
-			status: "success",
-		});
+		try {
+			const createdBlog = await blogService.createBlog(newBlog);
+			setBlogs((oldBlogs) => [...oldBlogs, createdBlog]);
+
+			// displayNotification({
+			// 	message: `a new blog ${newBlog.title} by ${newBlog.author} was created`,
+			// 	status: "success",
+			// });
+
+			dispatch(
+				setNotification(
+					{
+						notification: `a new blog ${newBlog.title} by ${newBlog.author} was created`,
+						status: "success",
+					},
+					3
+				)
+			);
+		} catch (error) {
+			setNotification(
+				{
+					notification: `Failed to create blog`,
+					status: "error",
+				},
+				3
+			);
+		}
 	};
 
 	const handleLikeBlog = async (blog) => {
@@ -92,10 +138,17 @@ const App = () => {
 			);
 		});
 
-		displayNotification({
-			message: `blog ${blog.title} was liked`,
-			status: "success",
-		});
+		// displayNotification({
+		// 	message: `blog ${blog.title} was liked`,
+		// 	status: "success",
+		// });
+
+		dispatch(
+			setNotification(
+				{ notification: `blog ${blog.title} was liked`, status: "success" },
+				3
+			)
+		);
 	};
 
 	const handleDeleteBlog = async (blog) => {
@@ -111,24 +164,31 @@ const App = () => {
 			return newBlogs;
 		});
 
-		displayNotification({
-			message: `blog ${blog.title} was deleted`,
-			status: "success",
-		});
+		// displayNotification({
+		// 	message: `blog ${blog.title} was deleted`,
+		// 	status: "success",
+		// });
+
+		dispatch(
+			setNotification({
+				notification: `blog ${blog.title} was deleted`,
+				status: "success",
+			})
+		);
 	};
 
-	const displayNotification = (notification) => {
-		console.log("notify");
-		setNotification(notification);
+	// const displayNotification = (notification) => {
+	// 	console.log("notify");
+	// 	setNotification(notification);
 
-		setTimeout(() => {
-			setNotification(null);
-		}, 3000);
-	};
+	// 	setTimeout(() => {
+	// 		setNotification(null);
+	// 	}, 3000);
+	// };
 
 	return (
 		<div className="px-12 py-4">
-			{notification !== null && <Notification notification={notification} />}
+			<Notification />
 			{user === null ? (
 				<Login
 					handleSubmit={handleSubmit}
