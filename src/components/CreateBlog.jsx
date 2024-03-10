@@ -1,22 +1,58 @@
 import React from "react";
 import { useState } from "react";
+import { createBlog } from "../reducers/blogsReducer";
+import { useDispatch } from "react-redux";
+import { setNotification } from "../reducers/notificationReducer";
 
-const CreateBlog = ({ handleCreateBlog }) => {
+const CreateBlog = ({ createBlogRef }) => {
+	const dispatch = useDispatch();
+
 	const [newBlog, setNewBlog] = useState({
 		title: "",
 		author: "",
 		url: "",
 	});
 
-	const createBlog = (event) => {
+	// const createBlog = (event) => {
+	// 	event.preventDefault();
+
+	// 	handleCreateBlog(newBlog);
+	// 	setNewBlog({ title: "", author: "", url: "" });
+	// };
+
+	const handleCreateBlog = (event) => {
 		event.preventDefault();
 
-		handleCreateBlog(newBlog);
-		setNewBlog({ title: "", author: "", url: "" });
+		// Close the blog form here
+		createBlogRef.current.toggleVisibility();
+
+		// No error handler
+
+		try {
+			dispatch(createBlog(newBlog));
+
+			dispatch(
+				setNotification(
+					{
+						notification: `a new blog ${newBlog.title} by ${newBlog.author} was created`,
+						status: "success",
+					},
+					3
+				)
+			);
+		} catch (error) {
+			setNotification(
+				{
+					notification: `Failed to create blog`,
+					status: "error",
+				},
+				3
+			);
+		}
 	};
 
 	return (
-		<form onSubmit={createBlog}>
+		<form onSubmit={handleCreateBlog}>
 			<h2 className="text-4xl font-medium mb-5">Create new</h2>
 			<div>
 				<label className="text-3xl mr-3" htmlFor="title">
