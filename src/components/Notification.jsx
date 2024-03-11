@@ -1,7 +1,10 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
-const Notification = ({ notification }) => {
-	console.log(notification.status);
+const Notification = () => {
+	const notification = useSelector((state) => state.notification);
+
+	// console.log(notification.status);
 	let bg, border;
 
 	if (notification.status === "success") {
@@ -12,11 +15,13 @@ const Notification = ({ notification }) => {
 		border = "border-red-600";
 	}
 
-	console.log(bg, border);
+	if (!notification.notification) {
+		return;
+	}
 
 	return (
 		<div className={`py-4 px-2 ${border} border-4 ${bg} mb-8`}>
-			{notification.message}
+			{notification.notification}
 		</div>
 	);
 };
