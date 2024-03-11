@@ -13,13 +13,6 @@ const CreateBlog = ({ createBlogRef }) => {
 		url: "",
 	});
 
-	// const createBlog = (event) => {
-	// 	event.preventDefault();
-
-	// 	handleCreateBlog(newBlog);
-	// 	setNewBlog({ title: "", author: "", url: "" });
-	// };
-
 	const handleCreateBlog = (event) => {
 		event.preventDefault();
 
@@ -30,16 +23,11 @@ const CreateBlog = ({ createBlogRef }) => {
 
 		try {
 			dispatch(createBlog(newBlog));
-
-			dispatch(
-				setNotification(
-					{
-						notification: `a new blog ${newBlog.title} by ${newBlog.author} was created`,
-						status: "success",
-					},
-					3
-				)
-			);
+			setNewBlog({
+				title: "",
+				author: "",
+				url: "",
+			});
 		} catch (error) {
 			setNotification(
 				{

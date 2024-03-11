@@ -7,7 +7,7 @@ import Login from "./components/Login";
 import CreateBlog from "./components/CreateBlog";
 import Togglable from "./components/Togglable";
 import { setNotification } from "./reducers/notificationReducer";
-import { initializeBlogs, setBlogs } from "./reducers/blogsReducer";
+import { deleteBlog, initializeBlogs, likeBlog } from "./reducers/blogsReducer";
 import { useDispatch, useSelector } from "react-redux";
 
 const App = () => {
@@ -85,41 +85,11 @@ const App = () => {
 	};
 
 	const handleLikeBlog = async (blog) => {
-		const updatedBlog = await blogService.likeBlog(blog);
-
-		setBlogs((oldBlogs) => {
-			return oldBlogs.map((oldBlog) =>
-				oldBlog.id === blog.id ? updatedBlog : oldBlog
-			);
-		});
-
-		dispatch(
-			setNotification(
-				{ notification: `blog ${blog.title} was liked`, status: "success" },
-				3
-			)
-		);
+		dispatch(likeBlog(blog));
 	};
 
-	const handleDeleteBlog = async (blog) => {
-		await blogService.deleteBlog(blog);
-
-		setBlogs((oldBlogs) => {
-			let newBlogs = [];
-			oldBlogs.forEach((oldBlog) => {
-				if (oldBlog.id !== blog.id) {
-					newBlogs.push(oldBlog);
-				}
-			});
-			return newBlogs;
-		});
-
-		dispatch(
-			setNotification({
-				notification: `blog ${blog.title} was deleted`,
-				status: "success",
-			})
-		);
+	const handleDeleteBlog = (blog) => {
+		dispatch(deleteBlog(blog));
 	};
 
 	return (
