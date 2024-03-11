@@ -1,7 +1,27 @@
-import { useState } from "react";
 import Button from "./Button";
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteBlog, likeBlog } from "../reducers/blogsReducer";
 
-const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
+const Blog = ({ blog }) => {
+	const dispatch = useDispatch();
+
+	const handleDeleteBlog = () => {
+		const confirm = window.confirm(
+			`Are you sure you want to delete ${blog.title}?`
+		);
+
+		if (confirm) {
+			dispatch(deleteBlog(blog));
+		}
+	};
+
+	const handleLikeBlog = async (blog) => {
+		dispatch(likeBlog(blog));
+	};
+
+	const user = useSelector((state) => state.user);
+
 	const [visible, setVisible] = useState(false);
 
 	const blogStyle = {
@@ -14,16 +34,6 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
 
 	const toggleVisibility = () => {
 		setVisible((prevVisible) => !prevVisible);
-	};
-
-	const deleteBlog = () => {
-		const confirm = window.confirm(
-			`Are you sure you want to delete ${blog.title}?`
-		);
-
-		if (confirm) {
-			handleDeleteBlog(blog);
-		}
 	};
 
 	return (
@@ -51,7 +61,7 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog, user }) => {
 					</div>
 					<div>{blog.user.username}</div>
 					{user.id === blog.user.id && (
-						<Button label={"remove"} handleClick={() => deleteBlog()} />
+						<Button label={"remove"} handleClick={() => handleDeleteBlog()} />
 					)}
 				</>
 			)}
