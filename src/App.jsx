@@ -34,14 +34,6 @@ const App = () => {
 		dispatch(signOutUser());
 	};
 
-	const handleLikeBlog = async (blog) => {
-		dispatch(likeBlog(blog));
-	};
-
-	const handleDeleteBlog = (blog) => {
-		dispatch(deleteBlog(blog));
-	};
-
 	return (
 		<div className="px-12 py-4">
 			<Notification />
@@ -64,13 +56,7 @@ const App = () => {
 					<h2 className="text-4xl font-medium mb-5">Blogs</h2>
 					<div className="flex flex-col gap-3 text-4xl mb-16">
 						{sortedBlogs.map((blog) => (
-							<Blog
-								key={blog.id}
-								handleLikeBlog={handleLikeBlog}
-								handleDeleteBlog={handleDeleteBlog}
-								blog={blog}
-								user={user}
-							/>
+							<Blog key={blog.id} blog={blog} />
 						))}
 					</div>
 
