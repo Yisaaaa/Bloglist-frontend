@@ -4,14 +4,12 @@ import Notification from "./components/Notification";
 import Login from "./components/Login";
 import CreateBlog from "./components/CreateBlog";
 import Togglable from "./components/Togglable";
-import {
-	deleteBlog,
-	initializeBlogs,
-	likeBlog,
-} from "./reducersRedux/blogsReducer";
+import { initializeBlogs } from "./reducersRedux/blogsReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { initializeUser, signOutUser } from "./reducersRedux/userReducer";
 import { useSetNotification } from "./reducers/notificationReducer";
+import { useQuery } from "@tanstack/react-query";
+import blogService from "./services/blogs";
 
 const App = () => {
 	const dispatch = useDispatch();
@@ -19,10 +17,13 @@ const App = () => {
 
 	const user = useSelector((state) => state.user);
 
-	const blogs = useSelector((state) => state.blogs);
+	// const blogs = useSelector((state) => state.blogs);
 
-	const sortedBlogs = [...blogs].sort((a, b) => {
-		return b.likes - a.likes;
+	const blogResult = useQuery({
+		queryKey: ["blogs"],
+		queryFn: blogService.getAll,
+		retry: 2,
+		refetchOnWindowFocus: false,
 	});
 
 	const createBlogRef = useRef();
@@ -47,6 +48,16 @@ const App = () => {
 			3
 		);
 	};
+
+	if (blogResult.isPending) {
+		return <div>Fetching blogs...</div>;
+	} else if (blogResult.isError) {
+		return <div>Failed to fetch blogs</div>;
+	}
+
+	const sortedBlogs = [...blogResult.data].sort((a, b) => {
+		return b.likes - a.likes;
+	});
 
 	return (
 		<div className="px-12 py-4">

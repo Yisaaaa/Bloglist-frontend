@@ -3,15 +3,27 @@ import { useState } from "react";
 import { createBlog } from "../reducersRedux/blogsReducer";
 import { useDispatch } from "react-redux";
 import { useSetNotification } from "../reducers/notificationReducer";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import blogService from "../services/blogs";
 
 const CreateBlog = ({ createBlogRef }) => {
 	const dispatch = useDispatch();
 	const setNotification = useSetNotification();
+	const queryClient = useQueryClient();
 
 	const [newBlog, setNewBlog] = useState({
 		title: "",
 		author: "",
 		url: "",
+	});
+
+	const blogMutation = useMutation({
+		mutationFn: blogService.createBlog,
+		onSuccess: (newBlog) => {
+			const blogs = queryClient.getQueryData(["blogs"]).concat(newBlog);
+			queryClient.setQueryData(["blogs"], blogs);
+		},
+		throwOnError: true,
 	});
 
 	const handleCreateBlog = async (event) => {
@@ -23,7 +35,8 @@ const CreateBlog = ({ createBlogRef }) => {
 		// No error handler
 
 		try {
-			await dispatch(createBlog(newBlog));
+			// await dispatch(createBlog(newBlog));
+			blogMutation.mutate(newBlog);
 			setNewBlog({
 				title: "",
 				author: "",
