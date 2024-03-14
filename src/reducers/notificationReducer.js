@@ -1,32 +1,25 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { useContext } from "react";
+import { NotificationContext } from "../contexts/NotificationContextProvider";
 
-const notificationSlice = createSlice({
-	name: "notification",
-	initialState: {
-		notification: "",
-		status: "",
-	},
+const notificationReducer = (state, action) => {
+	switch (action.type) {
+		case "updateNotification":
+			return action.payload;
 
-	reducers: {
-		updateNotification: (state, action) => {
-			return { ...action.payload };
-		},
+		case "clearNotification":
+			return "";
 
-		clearNotification: (state) => {
-			return { notification: "", status: "" };
-		},
-	},
-});
-
-export const { updateNotification, clearNotification } =
-	notificationSlice.actions;
-
-export const setNotification = (notification, timeOut) => {
-	return (dispatch) => {
-		dispatch(updateNotification(notification));
-
-		setTimeout(() => dispatch(clearNotification()), timeOut * 1000);
-	};
+		default:
+			return state;
+	}
 };
 
-export default notificationSlice.reducer;
+export const useNotificationValue = () => {
+	return useContext(NotificationContext)[0];
+};
+
+export const useSetNotification = () => {
+	return useContext(NotificationContext)[1];
+};
+
+export default notificationReducer;

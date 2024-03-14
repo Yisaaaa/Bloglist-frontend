@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useInsertionEffect } from "react";
 import { useState } from "react";
-import { createBlog } from "../reducers/blogsReducer";
+import { createBlog } from "../reducersRedux/blogsReducer";
 import { useDispatch } from "react-redux";
-import { setNotification } from "../reducers/notificationReducer";
+import { useSetNotification } from "../reducers/notificationReducer";
 
 const CreateBlog = ({ createBlogRef }) => {
 	const dispatch = useDispatch();
+	const setNotification = useSetNotification();
 
 	const [newBlog, setNewBlog] = useState({
 		title: "",
@@ -13,7 +14,7 @@ const CreateBlog = ({ createBlogRef }) => {
 		url: "",
 	});
 
-	const handleCreateBlog = (event) => {
+	const handleCreateBlog = async (event) => {
 		event.preventDefault();
 
 		// Close the blog form here
@@ -22,17 +23,25 @@ const CreateBlog = ({ createBlogRef }) => {
 		// No error handler
 
 		try {
-			dispatch(createBlog(newBlog));
+			await dispatch(createBlog(newBlog));
 			setNewBlog({
 				title: "",
 				author: "",
 				url: "",
 			});
+			setNotification(
+				{
+					notification: `a new blog ${newBlog.title} by ${newBlog.author} was created`,
+					isError: false,
+				},
+				3
+			);
 		} catch (error) {
+			console.log(error);
 			setNotification(
 				{
 					notification: `Failed to create blog`,
-					status: "error",
+					isError: true,
 				},
 				3
 			);

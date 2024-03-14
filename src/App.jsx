@@ -1,15 +1,21 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useContext } from "react";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import Login from "./components/Login";
 import CreateBlog from "./components/CreateBlog";
 import Togglable from "./components/Togglable";
-import { deleteBlog, initializeBlogs, likeBlog } from "./reducers/blogsReducer";
+import {
+	deleteBlog,
+	initializeBlogs,
+	likeBlog,
+} from "./reducersRedux/blogsReducer";
 import { useDispatch, useSelector } from "react-redux";
-import { initializeUser, signOutUser } from "./reducers/userReducer";
+import { initializeUser, signOutUser } from "./reducersRedux/userReducer";
+import { useSetNotification } from "./reducers/notificationReducer";
 
 const App = () => {
 	const dispatch = useDispatch();
+	const setNotification = useSetNotification();
 
 	const user = useSelector((state) => state.user);
 
@@ -32,6 +38,14 @@ const App = () => {
 	const handleSignOut = (event) => {
 		event.preventDefault();
 		dispatch(signOutUser());
+
+		setNotification(
+			{
+				notification: "signed out successfully",
+				isError: false,
+			},
+			3
+		);
 	};
 
 	return (

@@ -1,10 +1,12 @@
 import Button from "./Button";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteBlog, likeBlog } from "../reducers/blogsReducer";
+import { deleteBlog, likeBlog } from "../reducersRedux/blogsReducer";
+import { useSetNotification } from "../reducers/notificationReducer";
 
 const Blog = ({ blog }) => {
 	const dispatch = useDispatch();
+	const setNotification = useSetNotification();
 
 	const handleDeleteBlog = () => {
 		const confirm = window.confirm(
@@ -13,11 +15,25 @@ const Blog = ({ blog }) => {
 
 		if (confirm) {
 			dispatch(deleteBlog(blog));
+			setNotification(
+				{
+					notification: `blog ${blog.title} was deleted `,
+					isError: false,
+				},
+				3
+			);
 		}
 	};
 
 	const handleLikeBlog = async (blog) => {
 		dispatch(likeBlog(blog));
+		setNotification(
+			{
+				notification: `blog ${blog.title} was liked`,
+				isError: false,
+			},
+			3
+		);
 	};
 
 	const user = useSelector((state) => state.user);
