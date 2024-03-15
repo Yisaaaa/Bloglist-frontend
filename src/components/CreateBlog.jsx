@@ -1,13 +1,10 @@
 import React, { useInsertionEffect } from "react";
 import { useState } from "react";
-import { createBlog } from "../reducersRedux/blogsReducer";
-import { useDispatch } from "react-redux";
 import { useSetNotification } from "../reducers/notificationReducer";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import blogService from "../services/blogs";
 
 const CreateBlog = ({ createBlogRef }) => {
-	const dispatch = useDispatch();
 	const setNotification = useSetNotification();
 	const queryClient = useQueryClient();
 
@@ -17,7 +14,7 @@ const CreateBlog = ({ createBlogRef }) => {
 		url: "",
 	});
 
-	const blogMutation = useMutation({
+	const createBlogMutation = useMutation({
 		mutationFn: blogService.createBlog,
 		onSuccess: (newBlog) => {
 			const blogs = queryClient.getQueryData(["blogs"]).concat(newBlog);
@@ -36,7 +33,7 @@ const CreateBlog = ({ createBlogRef }) => {
 
 		try {
 			// await dispatch(createBlog(newBlog));
-			blogMutation.mutate(newBlog);
+			createBlogMutation.mutate(newBlog);
 			setNewBlog({
 				title: "",
 				author: "",
