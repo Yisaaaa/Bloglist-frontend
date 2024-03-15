@@ -4,20 +4,21 @@ import Notification from "./components/Notification";
 import Login from "./components/Login";
 import CreateBlog from "./components/CreateBlog";
 import Togglable from "./components/Togglable";
-import { initializeBlogs } from "./reducersRedux/blogsReducer";
-import { useDispatch, useSelector } from "react-redux";
-import { initializeUser, signOutUser } from "./reducersRedux/userReducer";
 import { useSetNotification } from "./reducers/notificationReducer";
 import { useQuery } from "@tanstack/react-query";
 import blogService from "./services/blogs";
+import {
+	useInitializeUser,
+	useUserValue,
+	useSignOutUser,
+} from "./reducers/userReducer";
 
 const App = () => {
-	const dispatch = useDispatch();
 	const setNotification = useSetNotification();
+	const initializeUser = useInitializeUser();
+	const signOutUser = useSignOutUser();
 
-	const user = useSelector((state) => state.user);
-
-	// const blogs = useSelector((state) => state.blogs);
+	const user = useUserValue();
 
 	const blogResult = useQuery({
 		queryKey: ["blogs"],
@@ -29,16 +30,12 @@ const App = () => {
 	const createBlogRef = useRef();
 
 	useEffect(() => {
-		dispatch(initializeBlogs());
-	}, []);
-
-	useEffect(() => {
-		dispatch(initializeUser());
+		initializeUser();
 	}, []);
 
 	const handleSignOut = (event) => {
 		event.preventDefault();
-		dispatch(signOutUser());
+		signOutUser();
 
 		setNotification(
 			{

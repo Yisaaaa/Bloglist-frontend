@@ -1,12 +1,11 @@
 import React from "react";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { loginUser, setUser } from "../reducersRedux/userReducer";
 import { useSetNotification } from "../reducers/notificationReducer";
+import { useLoginUser } from "../reducers/userReducer";
 
 const Login = () => {
-	const dispatch = useDispatch();
 	const setNotification = useSetNotification();
+	const loginUser = useLoginUser();
 
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -15,7 +14,8 @@ const Login = () => {
 		event.preventDefault();
 
 		try {
-			await dispatch(loginUser(username, password));
+			console.log("go");
+			await loginUser(username, password);
 
 			setUsername("");
 			setPassword("");

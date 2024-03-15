@@ -1,13 +1,14 @@
 import Button from "./Button";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { useSetNotification } from "../reducers/notificationReducer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import blogService from "../services/blogs";
+import { useUserValue } from "../reducers/userReducer";
 
 const Blog = ({ blog }) => {
 	const setNotification = useSetNotification();
 	const queryClient = useQueryClient();
+	const user = useUserValue();
 
 	const deleteBlogMutation = useMutation({
 		mutationFn: blogService.deleteBlog,
@@ -73,8 +74,6 @@ const Blog = ({ blog }) => {
 	const handleLikeBlog = async (blog) => {
 		likeBlogMutation.mutate(blog);
 	};
-
-	const user = useSelector((state) => state.user);
 
 	const [visible, setVisible] = useState(false);
 
