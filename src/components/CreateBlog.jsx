@@ -1,4 +1,4 @@
-import React, { useInsertionEffect } from "react";
+import React from "react";
 import { useState } from "react";
 import { useSetNotification } from "../reducers/notificationReducer";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -19,8 +19,30 @@ const CreateBlog = ({ createBlogRef }) => {
 		onSuccess: (newBlog) => {
 			const blogs = queryClient.getQueryData(["blogs"]).concat(newBlog);
 			queryClient.setQueryData(["blogs"], blogs);
+
+			setNotification(
+				{
+					notification: `a new blog ${newBlog.title} by ${newBlog.author} was created`,
+					isError: false,
+				},
+				3
+			);
+
+			setNewBlog({
+				title: "",
+				author: "",
+				url: "",
+			});
 		},
-		throwOnError: true,
+		onError: (error) => {
+			setNotification(
+				{
+					notification: `Something went wrong. Failed to create blog ${blog.title}`,
+					isError: true,
+				},
+				3
+			);
+		},
 	});
 
 	const handleCreateBlog = async (event) => {
@@ -29,33 +51,7 @@ const CreateBlog = ({ createBlogRef }) => {
 		// Close the blog form here
 		createBlogRef.current.toggleVisibility();
 
-		// No error handler
-
-		try {
-			// await dispatch(createBlog(newBlog));
-			createBlogMutation.mutate(newBlog);
-			setNewBlog({
-				title: "",
-				author: "",
-				url: "",
-			});
-			setNotification(
-				{
-					notification: `a new blog ${newBlog.title} by ${newBlog.author} was created`,
-					isError: false,
-				},
-				3
-			);
-		} catch (error) {
-			console.log(error);
-			setNotification(
-				{
-					notification: `Failed to create blog`,
-					isError: true,
-				},
-				3
-			);
-		}
+		createBlogMutation.mutate(newBlog);
 	};
 
 	return (
