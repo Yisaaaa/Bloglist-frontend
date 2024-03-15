@@ -1,86 +1,68 @@
-import { createSlice } from "@reduxjs/toolkit";
-import blogs from "../services/blogs";
-import blogsReducer from "./blogsReducer";
+import { useContext } from "react";
 import blogService from "../services/blogs";
-import { setNotification } from "./notificationReducer";
+import { UserContext } from "../contexts/UserContextProvider";
 import login from "../services/login";
 
-const userSlice = createSlice({
-	name: "user",
-	initialState: null,
-	reducers: {
-		setUser: (state, action) => {
+const userReducer = (state, action) => {
+	switch (action.type) {
+		case "setUser":
 			return action.payload;
-		},
-	},
-});
 
-export const { setUser } = userSlice.actions;
+		default:
+			return state;
+	}
+};
 
-export const initializeUser = () => {
-	return (dispatch) => {
-		let loggedUser = window.localStorage.getItem("loggedInBlogUser");
+export const useInitializeUser = () => {
+	const userDispatch = useUserDispatch();
+	return () => {
+		let user = window.localStorage.getItem("loggedInBlogUser");
 
-		if (loggedUser) {
-			loggedUser = JSON.parse(loggedUser);
-			dispatch(setUser(loggedUser));
-			blogService.setToken(loggedUser.token);
+		if (user) {
+			user = JSON.parse(user);
+			blogService.setToken(user.token);
+			userDispatch({ type: "setUser", payload: user });
 		}
 	};
 };
 
-export const loginUser = (username, password, stateSetter) => {
-	return async (dispatch) => {
+export const useLoginUser = () => {
+	const userDispatch = useUserDispatch();
+	return async (username, password) => {
 		try {
 			const user = await login({ username, password });
 
-			dispatch(setUser(user));
+			userDispatch({
+				type: "setUser",
+				payload: user,
+			});
 			window.localStorage.setItem("loggedInBlogUser", JSON.stringify(user));
 
 			blogService.setToken(user.token);
-
-			stateSetter.setUsername("");
-			stateSetter.setPassword("");
-
-			dispatch(
-				setNotification(
-					{
-						notification: "Logged in successfully",
-						status: "success",
-					},
-					3
-				)
-			);
 		} catch (error) {
-			dispatch(
-				setNotification(
-					{
-						notification: "Wrong username or password",
-						status: "error",
-					},
-					3
-				)
-			);
+			console.log(error);
+			throw error;
 		}
 	};
 };
 
-export const signOutUser = () => {
-	return (dispatch) => {
-		dispatch(setUser(null));
+export const useSignOutUser = () => {
+	const userDispatch = useUserDispatch();
+
+	return () => {
+		userDispatch({ type: "setUser", payload: null });
+
 		blogService.setToken(null);
 		window.localStorage.clear();
-
-		dispatch(
-			setNotification(
-				{
-					notification: "signed out successfully",
-					status: "success",
-				},
-				3
-			)
-		);
 	};
 };
 
-export default userSlice.reducer;
+export const useUserValue = () => {
+	return useContext(UserContext)[0];
+};
+
+export const useUserDispatch = () => {
+	return useContext(UserContext)[1];
+};
+
+export default userReducer;

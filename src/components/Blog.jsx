@@ -1,10 +1,65 @@
 import Button from "./Button";
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { deleteBlog, likeBlog } from "../reducers/blogsReducer";
+import { useSetNotification } from "../reducers/notificationReducer";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import blogService from "../services/blogs";
+import { useUserValue } from "../reducers/userReducer";
 
 const Blog = ({ blog }) => {
-	const dispatch = useDispatch();
+	const setNotification = useSetNotification();
+	const queryClient = useQueryClient();
+	const user = useUserValue();
+
+	const deleteBlogMutation = useMutation({
+		mutationFn: blogService.deleteBlog,
+		onSuccess: () => {
+			const blogsLeft = queryClient
+				.getQueryData(["blogs"])
+				.filter((prevBlog) => blog.id !== prevBlog.id);
+			queryClient.setQueryData(["blogs"], blogsLeft);
+			setNotification(
+				{
+					notification: `blog ${blog.title} was deleted `,
+					isError: false,
+				},
+				3
+			);
+		},
+		onError: (error) => {
+			console.log(error);
+			setNotification(
+				{
+					notification: `Something went wrong. Failed to delete ${blog.title}`,
+					isError: true,
+				},
+				3
+			);
+		},
+	});
+
+	const likeBlogMutation = useMutation({
+		mutationFn: blogService.likeBlog,
+		onSuccess: (likedBlog) => {
+			const blogs = queryClient.getQueryData(["blogs"]).map((blog) => {
+				return blog.id === likedBlog.id ? likedBlog : blog;
+			});
+
+			queryClient.setQueryData(["blogs"], blogs);
+
+			setNotification(
+				{
+					notification: `blog ${blog.title} liked successfully`,
+					isError: false,
+				},
+				3
+			);
+		},
+		onError: () => {
+			setNotification({
+				notification: `Something went wrong. Failed to like blog ${blog.title}`,
+			});
+		},
+	});
 
 	const handleDeleteBlog = () => {
 		const confirm = window.confirm(
@@ -12,15 +67,13 @@ const Blog = ({ blog }) => {
 		);
 
 		if (confirm) {
-			dispatch(deleteBlog(blog));
+			deleteBlogMutation.mutate(blog);
 		}
 	};
 
 	const handleLikeBlog = async (blog) => {
-		dispatch(likeBlog(blog));
+		likeBlogMutation.mutate(blog);
 	};
-
-	const user = useSelector((state) => state.user);
 
 	const [visible, setVisible] = useState(false);
 

@@ -1,38 +1,60 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useContext } from "react";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import Login from "./components/Login";
 import CreateBlog from "./components/CreateBlog";
 import Togglable from "./components/Togglable";
-import { deleteBlog, initializeBlogs, likeBlog } from "./reducers/blogsReducer";
-import { useDispatch, useSelector } from "react-redux";
-import { initializeUser, signOutUser } from "./reducers/userReducer";
+import { useSetNotification } from "./reducers/notificationReducer";
+import { useQuery } from "@tanstack/react-query";
+import blogService from "./services/blogs";
+import {
+	useInitializeUser,
+	useUserValue,
+	useSignOutUser,
+} from "./reducers/userReducer";
 
 const App = () => {
-	const dispatch = useDispatch();
+	const setNotification = useSetNotification();
+	const initializeUser = useInitializeUser();
+	const signOutUser = useSignOutUser();
 
-	const user = useSelector((state) => state.user);
+	const user = useUserValue();
 
-	const blogs = useSelector((state) => state.blogs);
-
-	const sortedBlogs = [...blogs].sort((a, b) => {
-		return b.likes - a.likes;
+	const blogResult = useQuery({
+		queryKey: ["blogs"],
+		queryFn: blogService.getAll,
+		retry: 2,
+		refetchOnWindowFocus: false,
 	});
 
 	const createBlogRef = useRef();
 
 	useEffect(() => {
-		dispatch(initializeBlogs());
-	}, []);
-
-	useEffect(() => {
-		dispatch(initializeUser());
+		initializeUser();
 	}, []);
 
 	const handleSignOut = (event) => {
 		event.preventDefault();
-		dispatch(signOutUser());
+		signOutUser();
+
+		setNotification(
+			{
+				notification: "signed out successfully",
+				isError: false,
+			},
+			3
+		);
 	};
+
+	if (blogResult.isPending) {
+		return <div>Fetching blogs...</div>;
+	} else if (blogResult.isError) {
+		return <div>Failed to fetch blogs</div>;
+	}
+
+	const sortedBlogs = [...blogResult.data].sort((a, b) => {
+		return b.likes - a.likes;
+	});
 
 	return (
 		<div className="px-12 py-4">

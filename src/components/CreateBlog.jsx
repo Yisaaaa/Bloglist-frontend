@@ -1,11 +1,12 @@
 import React from "react";
 import { useState } from "react";
-import { createBlog } from "../reducers/blogsReducer";
-import { useDispatch } from "react-redux";
-import { setNotification } from "../reducers/notificationReducer";
+import { useSetNotification } from "../reducers/notificationReducer";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import blogService from "../services/blogs";
 
 const CreateBlog = ({ createBlogRef }) => {
-	const dispatch = useDispatch();
+	const setNotification = useSetNotification();
+	const queryClient = useQueryClient();
 
 	const [newBlog, setNewBlog] = useState({
 		title: "",
@@ -13,30 +14,44 @@ const CreateBlog = ({ createBlogRef }) => {
 		url: "",
 	});
 
-	const handleCreateBlog = (event) => {
-		event.preventDefault();
+	const createBlogMutation = useMutation({
+		mutationFn: blogService.createBlog,
+		onSuccess: (newBlog) => {
+			const blogs = queryClient.getQueryData(["blogs"]).concat(newBlog);
+			queryClient.setQueryData(["blogs"], blogs);
 
-		// Close the blog form here
-		createBlogRef.current.toggleVisibility();
+			setNotification(
+				{
+					notification: `a new blog ${newBlog.title} by ${newBlog.author} was created`,
+					isError: false,
+				},
+				3
+			);
 
-		// No error handler
-
-		try {
-			dispatch(createBlog(newBlog));
 			setNewBlog({
 				title: "",
 				author: "",
 				url: "",
 			});
-		} catch (error) {
+		},
+		onError: (error) => {
 			setNotification(
 				{
-					notification: `Failed to create blog`,
-					status: "error",
+					notification: `Something went wrong. Failed to create blog ${blog.title}`,
+					isError: true,
 				},
 				3
 			);
-		}
+		},
+	});
+
+	const handleCreateBlog = async (event) => {
+		event.preventDefault();
+
+		// Close the blog form here
+		createBlogRef.current.toggleVisibility();
+
+		createBlogMutation.mutate(newBlog);
 	};
 
 	return (
