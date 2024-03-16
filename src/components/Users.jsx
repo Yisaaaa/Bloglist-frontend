@@ -1,22 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import userService from "../services/users";
 import { useQuery } from "@tanstack/react-query";
 
 const Users = () => {
-	const usersQuery = useQuery({
-		queryKey: ["users"],
-		queryFn: userService.getAll,
-		refetchOnWindowFocus: false,
-		retry: 1,
-	});
+	const [users, setUsers] = useState(null);
+	const [isLoading, setIsLoading] = useState(true);
 
-	if (usersQuery.isPending) {
-		return <div>Fetching users...</div>;
-	} else if (usersQuery.isError) {
-		return <div>Failed to retrieve users</div>;
+	useEffect(() => {
+		userService.getAll().then((res) => {
+			setUsers(res);
+			setIsLoading(false);
+		});
+	}, []);
+
+	if (isLoading) {
+		return <div>fetching users...</div>;
 	}
-
-	const users = usersQuery.data;
 
 	return (
 		<div>
