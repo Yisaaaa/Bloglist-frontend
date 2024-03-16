@@ -10,6 +10,7 @@ import {
 import Bloglist from "./components/Bloglist";
 import { Routes, Route, Link } from "react-router-dom";
 import Users from "./components/Users";
+import User from "./components/User";
 
 const App = () => {
 	const setNotification = useSetNotification();
@@ -59,6 +60,7 @@ const App = () => {
 					<Routes>
 						<Route path="/" element={<Bloglist />} />
 						<Route path="/users" element={<Users />} />
+						<Route path="/users/:id" element={<User />} />
 					</Routes>
 				</div>
 			)}

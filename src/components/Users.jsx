@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import userService from "../services/users";
-import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 
 const Users = () => {
 	const [users, setUsers] = useState(null);
@@ -29,30 +29,15 @@ const Users = () => {
 					{users.map((user) => {
 						return (
 							<div key={user.id} className="user flex justify-between w-36">
-								<p className="text-3xl ">{user.username}</p>
+								<Link to={`/users/${user.id}`}>
+									<p className="text-3xl ">{user.username}</p>
+								</Link>
 								<p className="text-3xl">{user.blogs.length}</p>
 							</div>
 						);
 					})}
 				</div>
 			</div>
-
-			{/* <div className="flex gap-5">
-				<div className="users">
-					<span>
-						<br />
-					</span>
-					{users.map((user) => (
-						<p key={user.id}>{user.username}</p>
-					))}
-				</div>
-				<div className="blogs-created">
-					<p className="">blogs created</p>
-					{users.map((user) => (
-						<p key={user.id}>{user.blogs.length}</p>
-					))}
-				</div>
-			</div> */}
 		</div>
 	);
 };
