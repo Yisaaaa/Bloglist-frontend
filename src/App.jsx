@@ -8,6 +8,8 @@ import {
 	useSignOutUser,
 } from "./reducers/userReducer";
 import Bloglist from "./components/Bloglist";
+import { Routes, Route, Link } from "react-router-dom";
+import Users from "./components/Users";
 
 const App = () => {
 	const setNotification = useSetNotification();
@@ -40,7 +42,8 @@ const App = () => {
 				<Login />
 			) : (
 				<div>
-					<div className="flex gap-2 items-end mb-20">
+					<h1 className="text-6xl font-bold mb-8">Blogs</h1>
+					<div className="flex flex-col gap-6 items-start mb-20">
 						<h1 className="text-5xl font-medium">
 							Logged in as {user.username}
 						</h1>
@@ -52,7 +55,11 @@ const App = () => {
 						</button>
 					</div>
 
-					<Bloglist />
+					{/* <Bloglist /> */}
+					<Routes>
+						<Route path="/" element={<Bloglist />} />
+						<Route path="/users" element={<Users />} />
+					</Routes>
 				</div>
 			)}
 		</div>
