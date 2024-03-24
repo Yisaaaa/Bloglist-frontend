@@ -8,13 +8,13 @@ import { BrowserRouter as Router } from "react-router-dom";
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-	<Router>
-		<QueryClientProvider client={queryClient}>
-			<UserContextProvider>
-				<NotificationContextProvider>
-					<App />
-				</NotificationContextProvider>
-			</UserContextProvider>
-		</QueryClientProvider>
-	</Router>
+    <Router>
+        <UserContextProvider>
+            <NotificationContextProvider>
+                <QueryClientProvider client={queryClient}>
+                    <App />
+                </QueryClientProvider>
+            </NotificationContextProvider>
+        </UserContextProvider>
+    </Router>
 );
