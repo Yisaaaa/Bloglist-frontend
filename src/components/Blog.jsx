@@ -75,8 +75,6 @@ const Blog = ({ blog }) => {
         likeBlogMutation.mutate(blog);
     };
 
-    const [visible, setVisible] = useState(false);
-
     const blogStyle = {
         paddingTop: 10,
         paddingLeft: 2,
@@ -85,20 +83,12 @@ const Blog = ({ blog }) => {
         marginBottom: 5,
     };
 
-    const toggleVisibility = () => {
-        setVisible((prevVisible) => !prevVisible);
-    };
-
     return (
         <div className="blog" style={blogStyle}>
             <div className="flex gap-4 align-middle mb-4">
                 <div className="text-4xl font-semibold">
                     {blog.title} by <em>{blog.author}</em>
                 </div>
-                <Button
-                    label={!visible ? "view" : "hide"}
-                    handleClick={() => toggleVisibility()}
-                />
             </div>
             <div>
                 <div className="underline">{blog.url}</div>
