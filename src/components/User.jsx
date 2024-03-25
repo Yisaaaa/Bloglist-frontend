@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import userService from "../services/users";
 import { useParams } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 
 const User = () => {
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const queryClient = useQueryClient();
 
     const id = useParams().id;
-
-    console.log(queryClient.getQueryData(["blogs"]));
 
     useEffect(() => {
         userService.getById(id).then((res) => {
