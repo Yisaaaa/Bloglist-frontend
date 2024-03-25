@@ -23,6 +23,7 @@ const App = () => {
     const blogsResult = useQuery({
         queryKey: ["blogs"],
         queryFn: blogService.getAll,
+        refetchOnWindowFocus: false,
     });
 
     const match = useMatch("/blogs/:id");

@@ -4,8 +4,12 @@ import { useSetNotification } from "../reducers/notificationReducer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import blogService from "../services/blogs";
 import { useUserValue } from "../reducers/userReducer";
+import { useNavigate } from "react-router-dom";
 
 const Blog = ({ blog }) => {
+    const [comment, setComment] = useState("");
+
+    const navigate = useNavigate();
     const setNotification = useSetNotification();
     const queryClient = useQueryClient();
     const user = useUserValue();
@@ -17,6 +21,9 @@ const Blog = ({ blog }) => {
                 .getQueryData(["blogs"])
                 .filter((prevBlog) => blog.id !== prevBlog.id);
             queryClient.setQueryData(["blogs"], blogsLeft);
+
+            navigate("/");
+
             setNotification(
                 {
                     notification: `blog ${blog.title} was deleted `,
@@ -61,6 +68,37 @@ const Blog = ({ blog }) => {
         },
     });
 
+    const addCommentMutation = useMutation({
+        mutationFn: blogService.addComment,
+        onSuccess: (updatedBlog) => {
+            console.log(updatedBlog);
+            const blogs = queryClient.getQueryData(["blogs"]);
+
+            queryClient.setQueryData(
+                ["blogs"],
+                blogs.map((blog) =>
+                    blog.id === updatedBlog.id ? updatedBlog : blog
+                )
+            );
+
+            setComment("");
+
+            setNotification(
+                {
+                    notification: `added comment on blog ${updatedBlog.title}`,
+                    isError: false,
+                },
+                3
+            );
+        },
+    });
+
+    const handleAddComment = (event) => {
+        event.preventDefault();
+        const payload = { blog, comment };
+        addCommentMutation.mutate(payload);
+    };
+
     const handleDeleteBlog = () => {
         const confirm = window.confirm(
             `Are you sure you want to delete ${blog.title}?`
@@ -71,7 +109,7 @@ const Blog = ({ blog }) => {
         }
     };
 
-    const handleLikeBlog = async (blog) => {
+    const handleLikeBlog = (blog) => {
         likeBlogMutation.mutate(blog);
     };
 
@@ -107,6 +145,38 @@ const Blog = ({ blog }) => {
                         handleClick={() => handleDeleteBlog()}
                     />
                 )}
+
+                <div className="mt-6 mb-6">
+                    <p className="text-3xl font-medium mb-3">comments</p>
+
+                    <form
+                        onSubmit={handleAddComment}
+                        className="flex gap-4 mb-3"
+                    >
+                        <input
+                            type="text"
+                            name="comment"
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            className="w-72 border-gray-800 border-2 px-1 text-xl"
+                        />
+                        <button
+                            type="submit"
+                            className="text-lg bg-gray-900 text-white font-bold rounded-md px-2 py-1"
+                        >
+                            add comment
+                        </button>
+                    </form>
+
+                    <ul className="list-disc ml-8">
+                        {blog.comments &&
+                            blog.comments.map((comment, index) => {
+                                const key = index;
+                                index++;
+                                return <li key={key}>{comment}</li>;
+                            })}
+                    </ul>
+                </div>
             </div>
         </div>
     );
