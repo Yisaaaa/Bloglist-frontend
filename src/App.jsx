@@ -62,35 +62,49 @@ const App = () => {
                 <Login />
             ) : (
                 <div>
-                    <h1 className="text-6xl font-bold mb-8">Blogs</h1>
-                    <div className="flex flex-col gap-6 items-start mb-20">
-                        <h1 className="text-5xl font-medium">
-                            Logged in as {user.username}
+                    <header className="flex justify-around bg-gray-300 p-4 mb-20">
+                        <nav className="flex gap-3">
+                            <ul className="hover:underline">
+                                <Link to={"/"}>blogs</Link>
+                            </ul>
+                            <ul className="hover:underline">
+                                <Link to={"/users"}>users</Link>
+                            </ul>
+                        </nav>
+                        <div className="flex  gap-6 items-end">
+                            <h1 className="text-3xl font-medium">
+                                {user.name} logged in
+                            </h1>
+                            <button
+                                onClick={handleSignOut}
+                                className=" text-base bg-black text-white font-semibold px-2 py-1 rounded-md"
+                            >
+                                Sign out
+                            </button>
+                        </div>
+                    </header>
+                    <main>
+                        <h1 className="text-5xl font-semibold mb-12">
+                            Blog app
                         </h1>
-                        <button
-                            onClick={handleSignOut}
-                            className="bg-black text-white font-semibold px-3 rounded-md"
-                        >
-                            Sign out
-                        </button>
-                    </div>
 
-                    {/* <Bloglist /> */}
-                    <Routes>
-                        <Route path="/" element={<Bloglist />} />
-                        <Route path="/users" element={<Users />} />
-                        <Route path="/users/:id" element={<User />} />
-                        <Route
-                            path="/blogs/:id"
-                            element={
-                                blog ? (
-                                    <Blog blog={blog} />
-                                ) : (
-                                    <div>fetching blog</div>
-                                )
-                            }
-                        />
-                    </Routes>
+                        {/* <Bloglist /> */}
+                        <Routes>
+                            <Route path="/" element={<Bloglist />} />
+                            <Route path="/users" element={<Users />} />
+                            <Route path="/users/:id" element={<User />} />
+                            <Route
+                                path="/blogs/:id"
+                                element={
+                                    blog ? (
+                                        <Blog blog={blog} />
+                                    ) : (
+                                        <div>fetching blog</div>
+                                    )
+                                }
+                            />
+                        </Routes>
+                    </main>
                 </div>
             )}
         </div>

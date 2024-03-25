@@ -28,20 +28,20 @@ const Bloglist = () => {
 
     return (
         <div>
-            <h2 className="text-4xl font-medium mb-5">Blogs</h2>
-            <div className="flex flex-col gap-3 text-4xl mb-16">
-                {sortedBlogs.map((blog) => (
-                    <Link key={blog.id} to={`/blogs/${blog.id}`}>
-                        <p className="text-3xl italic">
-                            {blog.title} by <em>{blog.author}</em>
-                        </p>
-                    </Link>
-                ))}
-            </div>
-
             <Togglable buttonLabel="new blog" ref={createBlogRef}>
                 <CreateBlog createBlogRef={createBlogRef} />
             </Togglable>
+            <div className="flex flex-col gap-3 text-4xl mt-4">
+                {sortedBlogs.map((blog) => (
+                    <Link key={blog.id} to={`/blogs/${blog.id}`}>
+                        <div className="">
+                            <p className="text-3xl italic hover:underline  ">
+                                {blog.title} by <em>{blog.author}</em>
+                            </p>
+                        </div>
+                    </Link>
+                ))}
+            </div>
         </div>
     );
 };
